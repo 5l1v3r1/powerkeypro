@@ -131,7 +131,7 @@ void POWERKEYPRO::onPDOReceive(CAN_FRAME* frame)
 {
 	int outputValue;
 	if (frame->id == (0x180 + keypadID)) //notification that key state has changed
-	{
+	{		
 		for (int bit = 0; bit < 12; bit++)
 		{
 			if (frame->data.byte[bit / 8] & (1 << (bit % 8)))
@@ -145,7 +145,7 @@ void POWERKEYPRO::onPDOReceive(CAN_FRAME* frame)
 		}
 		if (keystateChange != NULL) 
 		{
-			outputValue = frame->data.byte[0] + (frame->data.byte[1] * 256);
+			outputValue = frame->data.byte[0] + (frame->data.byte[1] * 256);			
 			keystateChange(outputValue); //call the callback function
 		}
 	}

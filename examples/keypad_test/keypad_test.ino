@@ -1,4 +1,4 @@
-//Sets up to become the CANOpen master node on CAN0 and control a Blink Keybox
+//Sets up to become the CANOpen master node on CAN0 and utilize a Powerkey Pro 2600
 #include "variant.h"'
 #include <due_can.h>
 #include <due_canopen.h>
@@ -17,7 +17,7 @@ void setup()
 {
 
 	Serial.begin(115200);
-	PowerKeyPro0.begin(125000, 0x15);
+	PowerKeyPro0.begin(500000, 0x15);
 	PowerKeyPro0.setKeyCallback(keypresses);
 }
 
