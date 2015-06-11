@@ -33,5 +33,5 @@ void loop()
 		state++;
 		if (state > 11) state = 0;
 	}
-	PowerKeyPro0.setLEDState(led, (LEDTYPE)state);
+	PowerKeyPro0.setLEDState(led + 1, (LEDTYPE)state);
 }

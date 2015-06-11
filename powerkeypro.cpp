@@ -97,7 +97,7 @@ bool POWERKEYPRO::getKeyState(int key)
 
 void POWERKEYPRO::setLEDState(int LED, LEDTYPE newState)
 {
-	SDO_FRAME frame;
+	SDO_FRAME frame;	
 	frame.nodeID = 0x600 + keypadID;
 	frame.cmd = SDO_WRITE;
 	frame.index = 0x6500;
