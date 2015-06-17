@@ -1,5 +1,5 @@
-#ifndef BLINK_KB_H_
-#define BLINK_KB_H_
+#ifndef POWERKEY_H_
+#define POWERKEY_H_
 
 #include <Arduino.h>
 #include <due_canopen.h> //powerkeypro connects over canopen link

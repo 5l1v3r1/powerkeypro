@@ -3,32 +3,32 @@
 //trampoline functions to bounce back into a class member. Not as pretty or 
 //proper as using a delegate scheme but nothing about delegates is that much fun
 //in C++ so this is much easier to maintain.
-void onPDOReceive0(CAN_FRAME *frame)
+void onPKPPDOReceive0(CAN_FRAME *frame)
 {
 	PowerKeyPro0.onPDOReceive(frame);
 }
 
-void onSDORxRequest0(SDO_FRAME *frame)
+void onPKPSDORxRequest0(SDO_FRAME *frame)
 {
 	PowerKeyPro0.onSDORequest(frame);
 }
 
-void onSDORxResponse0(SDO_FRAME *frame)
+void onPKPSDORxResponse0(SDO_FRAME *frame)
 {
 	PowerKeyPro0.onSDOResponse(frame);
 }
 
-void onPDOReceive1(CAN_FRAME *frame)
+void onPKPPDOReceive1(CAN_FRAME *frame)
 {
 	PowerKeyPro1.onPDOReceive(frame);
 }
 
-void onSDORxRequest1(SDO_FRAME *frame)
+void onPKPSDORxRequest1(SDO_FRAME *frame)
 {
 	PowerKeyPro1.onSDORequest(frame);
 }
 
-void onSDORxResponse1(SDO_FRAME *frame)
+void onPKPSDORxResponse1(SDO_FRAME *frame)
 {
 	PowerKeyPro1.onSDOResponse(frame);
 }
@@ -38,16 +38,16 @@ POWERKEYPRO::POWERKEYPRO(int chan)
 	if (chan == 0)
 	{
 		channel = &CanOpen0;
-		channel->setPDOCallback(onPDOReceive0);
-		channel->setSDOReqCallback(onSDORxRequest0);
-		channel->setSDOReplyCallback(onSDORxResponse0);
+		channel->setPDOCallback(onPKPPDOReceive0);
+		channel->setSDOReqCallback(onPKPSDORxRequest0);
+		channel->setSDOReplyCallback(onPKPSDORxResponse0);
 	}
 	else
 	{
 		channel = &CanOpen1;
-		channel->setPDOCallback(onPDOReceive1);
-		channel->setSDOReqCallback(onSDORxRequest1);
-		channel->setSDOReplyCallback(onSDORxResponse1);
+		channel->setPDOCallback(onPKPPDOReceive1);
+		channel->setSDOReqCallback(onPKPSDORxRequest1);
+		channel->setSDOReplyCallback(onPKPSDORxResponse1);
 	}
 	for (int x = 0; x < 12; x++) buttonState[x] = false;
 	keypadID = 0x15; //the default ID
@@ -58,7 +58,7 @@ void POWERKEYPRO::begin(int speed, int id)
 	if (!channel->isInitialized())
 	{
 		channel->setMasterMode();
-		channel->begin(speed, id);
+		channel->begin(speed, 0x05);
     
 		channel->sendNodeReset(0); //reset all nodes
 		delay(500);
