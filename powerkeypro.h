@@ -2,7 +2,7 @@
 #define POWERKEY_H_
 
 #include <Arduino.h>
-#include <due_canopen.h> //powerkeypro connects over canopen link
+#include <due_can.h>
 
 #define DEFAULT_ID	0x15
 
@@ -23,30 +23,54 @@ enum LEDTYPE
 	GREEN_AMBER_FLASH = 14
 };
 
-class POWERKEYPRO
+enum KEYTYPE
+{
+	MOMENTARY = 0,
+	TOGGLING = 1,
+	LATCHING = 2
+};
+
+class KeyListener
+{
+public:
+	virtual void keyEvent(int keyStates);
+};
+
+class POWERKEYPRO : public CANListener
 {
 public:
 	POWERKEYPRO(int); //canbus channel to use
 
-	void begin(int speed = 125000, int id = DEFAULT_ID); //begin the comm, pass desired canbus speed - defaults to the default keybox speed
+	void begin(int speed, int id = DEFAULT_ID); //begin the comm, pass desired canbus speed - defaults to the default keybox speed
 	bool isConnected(); //is a keypad responding to us?		
-	void setDeviceCANSpeed(int); //set a new comm speed. Updates the keybox with this new value
+	void setSpeed(int); //set a new comm speed. Updates the keybox with this new value
 	void setKeypadID(int id = 0x15); //that is the actual default ID they come with.
 	int findKeypadID(); //listen on the bus to find the keybox and return it's ID
-	void setKeyCallback(void (*cb)(int));
-	bool getKeyState(int key); //true = pressed, false = unpressed
-	void setLEDState(int LED, LEDTYPE newState);
-	LEDTYPE getLEDState(int LED);
-	void loop();
-	void onPDOReceive(CAN_FRAME* frame);
-	void onSDORequest(SDO_FRAME* frame);
-	void onSDOResponse(SDO_FRAME* frame);
+	void setDeviceCANSpeed(int speed);
+	bool getKey(int key); //true = pressed, false = unpressed
+	void setLED(int LED, LEDTYPE newState);
+	LEDTYPE getLED(int LED);
+	void setLEDBrightness(int bright);
+	void setBacklightBrightness(int bright);
+	void setMomentary(int key);
+	void setToggle(int key);
+	void setLatching(int key);
+	void gotFrame(CAN_FRAME *frame, int mailbox);
+	void registerListener(KeyListener *listener);
+	void removeListener();
+
 private:
-	CANOPEN *channel;
+	CANRaw *channel;
 	int keypadID; //which ID is the keybox on?
-	bool buttonState[12];
-	LEDTYPE LEDState[12]; //LED state for all 12 keys
-	void (*keystateChange)(int keyStates); //callback used when the keypad state changes (button up or down)
+	boolean buttonState[15]; //reported state of each key/input. Could be a lie depending on key type
+	boolean actualState[15]; //the current actual state of each button
+	boolean toggleState[15]; //used by any inputs set to TOGGLING
+	LEDTYPE LEDState[15]; //LED state for all keys
+	KEYTYPE keyType[15]; //what type is each input?
+	KeyListener *listener;
+	int usedMailbox;
+
+	void startKeypad();
 };
 
 extern POWERKEYPRO PowerKeyPro0;
